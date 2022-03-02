@@ -8,7 +8,7 @@ if __name__ == "__main__":
     output_video = input("Insert output video title(.avi) : ")
 
     video_path = f"/Eagle-Eye/source/videos/{input_video}"
-    pitch_img = "/Eagle-Eye/src/images/pitch.jpg"
+    pitch_img = f"/Eagle-Eye/source/images/pitch.jpg"
 
     pint_finder = PointFinder(video_path, pitch_img)
 
@@ -17,4 +17,4 @@ if __name__ == "__main__":
 
     homo_class = Homography(input_point, pitch_point)
 
-    create_video(input_video, output_video, homo_class)
+    create_video(video_path, output_video, homo_class)

@@ -9,14 +9,14 @@ def create_video(input_video, output_video, homo_class):
     ap = argparse.ArgumentParser()
     ap.add_argument("-i", "--input", help="path to input video", default="")
     ap.add_argument("-o", "--output", help="path to output video", default="")
-    ap.add_argument("-y", "--yolo", help="base path to YOLO directory", default='/Eagle-Eye/src/yolo-coco')
+    ap.add_argument("-y", "--yolo", help="base path to YOLO directory", default='\\Eagle-Eye\\eagle_eye\\yolo-coco')
     ap.add_argument("-c", "--confidence", type=float, default=0.5,
         help="minimum probability to filter weak detections")
     ap.add_argument("-t", "--threshold", type=float, default=0.3,
         help="threshold when applyong non-maxima suppression")
     args = vars(ap.parse_args())
 
-    args["input"] = f"/Eagle-Eye/source/videos/{input_video}"
+    args["input"] = input_video
     args["output"] = f"/Eagle-Eye/result/{output_video}"
 
     labelsPath = os.path.sep.join([args["yolo"], "coco.names"])
@@ -32,7 +32,10 @@ def create_video(input_video, output_video, homo_class):
     print("[INFO] loading YOLO from disk...")
     net = cv2.dnn.readNetFromDarknet(configPath, weightsPath)
     ln = net.getLayerNames()
-    ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
+    print(ln)
+    print(len(ln))
+    print(net.getUnconnectedOutLayers())
+    ln = [ln[i - 1] for i in net.getUnconnectedOutLayers()]
 
     vs = cv2.VideoCapture(args["input"])
     writer = None
@@ -86,7 +89,7 @@ def create_video(input_video, output_video, homo_class):
                     classIDs.append(classID)
 
         idxs = cv2.dnn.NMSBoxes(boxes, confidences, args["confidence"], args["threshold"])
-        img = cv2.imread("/Eagle-Eye/src/images/pitch.jpg")
+        img = cv2.imread("/Eagle-Eye/source/images/pitch.jpg")
 
         player_position_list = []
 
