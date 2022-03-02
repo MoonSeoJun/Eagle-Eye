@@ -32,9 +32,6 @@ def create_video(input_video, output_video, homo_class):
     print("[INFO] loading YOLO from disk...")
     net = cv2.dnn.readNetFromDarknet(configPath, weightsPath)
     ln = net.getLayerNames()
-    print(ln)
-    print(len(ln))
-    print(net.getUnconnectedOutLayers())
     ln = [ln[i - 1] for i in net.getUnconnectedOutLayers()]
 
     vs = cv2.VideoCapture(args["input"])
@@ -46,7 +43,6 @@ def create_video(input_video, output_video, homo_class):
             else cv2.CAP_PROP_FRAME_COUNT
         total = int(vs.get(prop))
         print("[INFO] {} total frames in video".format(total))
-
     except:
         print("[INFO] could not determine # of frames in video")
         print("[INFO] no approx. completion time can be provided")
