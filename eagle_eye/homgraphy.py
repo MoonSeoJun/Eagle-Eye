@@ -1,13 +1,13 @@
+import numpy as np
+import cv2 as cv
+
+
 class Homography:
     def __init__(self, video_point, pitch_point):
         self.src_list = video_point
         self.dst_list = pitch_point
 
-
     def get_bird_view_position(self, position):
-        import numpy as np
-        import cv2 as cv
-
         src_pts = np.array(self.src_list).reshape(-1,1,2)
         dst_pts = np.array(self.dst_list).reshape(-1,1,2)
 
