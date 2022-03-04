@@ -21,12 +21,7 @@ def create_video(input_video, output_video, homo_class):
     args["input"] = input_video
     args["output"] = f"/Eagle-Eye/result/{output_video}"
 
-    labelsPath = os.path.sep.join([args["yolo"], "coco.names"])
-    LABELS = open(labelsPath).read().strip().split("\n")
-
     np.random.seed(42)
-    COLORS = np.random.randint(0, 255, size=(len(LABELS), 3),
-        dtype="uint8")
 
     weightsPath = os.path.sep.join([args["yolo"], "yolov3.weights"])
     configPath = os.path.sep.join([args["yolo"], "yolov3.cfg"])
