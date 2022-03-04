@@ -8,7 +8,6 @@ import time
 import cv2
 import os
 
-
 class VideoCreator:
     def __init__(self, input_video:str, output_video:str, homogrph:Homography) -> None:
         self.args = self.setup_args(input_video, output_video)
