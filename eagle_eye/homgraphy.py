@@ -7,21 +7,17 @@ class Homography:
         self.src_list = video_point
         self.dst_list = pitch_point
 
+        __src_pts = np.array(self.src_list).reshape(-1,1,2)
+        __dst_pts = np.array(self.dst_list).reshape(-1,1,2)
+
+        self.H, _ = cv.findHomography(__src_pts, __dst_pts, cv.RANSAC, 5.0)
+
     def get_bird_view_position(self, position):
-        src_pts = np.array(self.src_list).reshape(-1,1,2)
-        dst_pts = np.array(self.dst_list).reshape(-1,1,2)
-
-        H, _ = cv.findHomography(src_pts, dst_pts, cv.RANSAC, 5.0)
-
-        return self.find_confrontation_point(H, position)
-
-    @staticmethod
-    def find_confrontation_point(homo_matrix , position) -> list:
         result_dict = []
         for j in range(0, len(position)):
             sample_arr = []
             for i in range(0,3):
-                sample_arr.append((homo_matrix[i][0] * position[j][0]) + (homo_matrix[i][1] * position[j][1]) + homo_matrix[i][2])
+                sample_arr.append((self.H[i][0] * position[j][0]) + (self.H[i][1] * position[j][1]) + self.H[i][2])
             result_dict.append(sample_arr)
 
         return result_dict
