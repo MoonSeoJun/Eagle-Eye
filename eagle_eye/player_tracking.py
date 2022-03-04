@@ -84,7 +84,6 @@ def create_video(input_video, output_video, homo_class):
 
                     boxes.append([x, y, int(width), int(height)])
                     confidences.append(float(confidence))
-                    #classIDs.append(classID)
                     rects.append([x, y, int(width) + x, int(height) + y])
 
         idxs = cv2.dnn.NMSBoxes(boxes, confidences, args["confidence"], args["threshold"])
