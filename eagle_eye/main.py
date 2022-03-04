@@ -5,7 +5,7 @@ from homgraphy import Homography
 
 if __name__ == "__main__":
     input_video = input("Enter your video : ")
-    output_video = input("Insert output video title(.avi) : ")
+    output_video = input("Insert output video title : ") + ".avi"
 
     video_path = f"/Eagle-Eye/source/videos/{input_video}"
     pitch_img = f"/Eagle-Eye/source/images/pitch.jpg"
