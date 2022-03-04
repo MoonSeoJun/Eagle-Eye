@@ -1,6 +1,6 @@
-from player_tracking import create_video
+from player_tracking import VideoCreator
 from find_point import PointFinder
-from homgraphy import Homography
+from homography import Homography
 
 
 if __name__ == "__main__":
@@ -15,6 +15,8 @@ if __name__ == "__main__":
     input_point = pint_finder.find_point("video")
     pitch_point = pint_finder.find_point("image")
 
-    homo_class = Homography(input_point, pitch_point)
+    homography_class = Homography(input_point, pitch_point)
 
-    create_video(video_path, output_video, homo_class)
+    video_creator = VideoCreator(video_path, output_video, homography_class)
+
+    video_creator.create_video()
