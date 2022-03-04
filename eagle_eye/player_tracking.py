@@ -88,8 +88,6 @@ def create_video(input_video, output_video, homo_class):
         idxs = cv2.dnn.NMSBoxes(boxes, confidences, args["confidence"], args["threshold"])
         img = cv2.imread("/Eagle-Eye/source/images/pitch.jpg")
 
-        #player_position_list = []
-
         if len(idxs) > 0:
             for i in idxs.flatten():
                 (x, y) = (boxes[i][0], boxes[i][1])
@@ -98,7 +96,6 @@ def create_video(input_video, output_video, homo_class):
                 center_x = x + int(w/2)
                 center_y = y + int(h/2)
 
-                #player_position_list.append([center_x, center_y])
                 rects.append([center_x, center_y, int(w) + center_x, int(h) + center_y])
 
         objects = sort_tracker.update(rects)
