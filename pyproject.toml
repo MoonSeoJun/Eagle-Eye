@@ -5,15 +5,12 @@ description = ""
 authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
-python = "3.9.7"
+python = "^3.8"
 numpy = "^1.22.2"
 argparse = "^1.4.0"
 imutils = "^0.5.4"
 opencv-contrib-python = "^4.5.5"
 opencv-python = "^4.5.5"
-filterpy = "^1.4.5"
-scikit-image = "^0.19.2"
-lap = "^0.4.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

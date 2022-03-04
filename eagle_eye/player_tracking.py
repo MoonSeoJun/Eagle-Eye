@@ -1,5 +1,3 @@
-from sort import Sort
-
 import numpy as np
 import argparse
 import imutils
@@ -36,7 +34,6 @@ def create_video(input_video, output_video, homo_class):
     ln = net.getLayerNames()
     ln = [ln[i - 1] for i in net.getUnconnectedOutLayers()]
 
-    sort_tracker = Sort(max_age=3, min_hits=1, iou_threshold=0.15)
     vs = cv2.VideoCapture(args["input"])
     writer = None
     (W, H) = (None, None)
@@ -53,6 +50,7 @@ def create_video(input_video, output_video, homo_class):
 
     while True:
         (grabbed, frame) = vs.read()
+
         if not grabbed:
             break
 
@@ -67,7 +65,7 @@ def create_video(input_video, output_video, homo_class):
 
         boxes = []
         confidences = []
-        rects = []
+        classIDs = []
 
         for output in layerOutputs:
             for detection in output:
@@ -84,27 +82,26 @@ def create_video(input_video, output_video, homo_class):
 
                     boxes.append([x, y, int(width), int(height)])
                     confidences.append(float(confidence))
+                    classIDs.append(classID)
 
         idxs = cv2.dnn.NMSBoxes(boxes, confidences, args["confidence"], args["threshold"])
         img = cv2.imread("/Eagle-Eye/source/images/pitch.jpg")
+
+        player_position_list = []
 
         if len(idxs) > 0:
             for i in idxs.flatten():
                 (x, y) = (boxes[i][0], boxes[i][1])
                 (w, h) = (boxes[i][2], boxes[i][3])
 
-                center_x = x + int(w/2)
-                center_y = y + int(h/2)
+                color = [int(c) for c in COLORS[classIDs[i]]]
+                cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
+                player_position_list.append([x + int(w/2), y + int(h)])
 
-                rects.append([center_x, center_y, int(w) + center_x, int(h) + center_y])
+        result_dict = homo_class.get_bird_view_position(player_position_list)
 
-        objects = sort_tracker.update(rects)
-        object_dict = homo_class.get_bird_view_position(objects)
-
-        for position, object in zip(object_dict, objects):
-            text = str(object[-1])
-            cv2.putText(img, text, (position[0]+10, position[1]-10), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 0), 1)
-            cv2.circle(img, (position[0], position[1]), 3, (0, 255, 0), -1)
+        for i in result_dict:
+            cv2.circle(img, (int(i[0]/i[2]), int(i[1]/i[2])), 3, (0, 255, 0), -1)
 
         if cv2.waitKey(10) & 0xFF == 27:
             break
