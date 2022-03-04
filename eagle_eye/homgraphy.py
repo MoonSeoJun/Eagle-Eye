@@ -12,14 +12,14 @@ class Homography:
 
         self.H, _ = cv.findHomography(__src_pts, __dst_pts, cv.RANSAC, 5.0)
 
-    def get_bird_view_position(self, position):
+    def get_bird_view_position(self, positions):
         result_dict = []
-        for j in range(0, len(position)):
+        for position in positions:
             sample_arr = []
             position_arr = []
-            for i in range(0,3):
-                sample_arr.append((self.H[i][0] * position[j][0]) + (self.H[i][1] * position[j][1]) + self.H[i][2])
-            position_arr = [int(sample_arr[0]/sample_arr[2]), int(sample_arr[0]/sample_arr[2])]
+            for h in self.H:
+                sample_arr.append((h[0] * position[0]) + (h[1] * position[1]) + h[2])
+            position_arr = [int(sample_arr[0]/sample_arr[2]), int(sample_arr[1]/sample_arr[2])]
             result_dict.append(position_arr)
 
         return result_dict

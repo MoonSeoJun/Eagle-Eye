@@ -84,28 +84,30 @@ def create_video(input_video, output_video, homo_class):
 
                     boxes.append([x, y, int(width), int(height)])
                     confidences.append(float(confidence))
-                    rects.append([x, y, int(width) + x, int(height) + y])
 
         idxs = cv2.dnn.NMSBoxes(boxes, confidences, args["confidence"], args["threshold"])
         img = cv2.imread("/Eagle-Eye/source/images/pitch.jpg")
 
-        player_position_list = []
-        objects = sort_tracker.update(rects)
+        #player_position_list = []
 
         if len(idxs) > 0:
             for i in idxs.flatten():
                 (x, y) = (boxes[i][0], boxes[i][1])
                 (w, h) = (boxes[i][2], boxes[i][3])
 
-                player_position_list.append([x + int(w/2), y + int(h)])
+                center_x = x + int(w/2)
+                center_y = y + int(h/2)
 
-        result_dict = homo_class.get_bird_view_position(player_position_list)
+                #player_position_list.append([center_x, center_y])
+                rects.append([center_x, center_y, int(w) + center_x, int(h) + center_y])
 
-        for position, object in zip(result_dict, objects):
+        objects = sort_tracker.update(rects)
+        object_dict = homo_class.get_bird_view_position(objects)
+
+        for position, object in zip(object_dict, objects):
             text = str(object[-1])
-            cv2.putText(img, text, (int(position[0]/position[2] - 10), int(position[1]/position[2] + 10)),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 0), 1)
-            cv2.circle(img, (int(position[0]/position[2]), int(position[1]/position[2])), 3, (0, 255, 0), -1)
+            cv2.putText(img, text, (position[0]+10, position[1]-10), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 0), 1)
+            cv2.circle(img, (position[0], position[1]), 3, (0, 255, 0), -1)
 
         if cv2.waitKey(10) & 0xFF == 27:
             break
