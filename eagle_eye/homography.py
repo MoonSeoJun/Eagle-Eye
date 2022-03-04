@@ -15,11 +15,7 @@ class Homography:
     def get_bird_view_position(self, positions):
         result_dict = []
         for position in positions:
-            sample_arr = []
-            position_arr = []
-            for h in self.H:
-                sample_arr.append((h[0] * position[0]) + (h[1] * position[1]) + h[2])
-            position_arr = [int(sample_arr[0]/sample_arr[2]), int(sample_arr[1]/sample_arr[2])]
-            result_dict.append(position_arr)
+            position_arr = [(h[0] * position[0]) + (h[1] * position[1]) + h[2] for h in self.H]
+            result_dict.append([int(position_arr[0]/position_arr[2]), int(position_arr[1]/position_arr[2])])
 
         return result_dict
