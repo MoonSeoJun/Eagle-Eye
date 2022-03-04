@@ -88,8 +88,8 @@ def create_video(input_video, output_video, homo_class):
                 (x, y) = (boxes[i][0], boxes[i][1])
                 (w, h) = (boxes[i][2], boxes[i][3])
 
-                center_x = x + int(w/2)
-                center_y = y + int(h/2)
+                center_x = x + int(w)
+                center_y = y + int(h)
 
                 rects.append([center_x, center_y, int(w) + center_x, int(h) + center_y])
 
