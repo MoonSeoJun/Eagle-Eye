@@ -19,7 +19,7 @@ class Homography:
             position_arr = []
             for i in range(0,3):
                 sample_arr.append((self.H[i][0] * position[j][0]) + (self.H[i][1] * position[j][1]) + self.H[i][2])
-            position_arr = [int(sample_arr[0]/sample_arr[1]), int(sample_arr[0]/sample_arr[2])]
+            position_arr = [int(sample_arr[0]/sample_arr[2]), int(sample_arr[0]/sample_arr[2])]
             result_dict.append(position_arr)
 
         return result_dict
