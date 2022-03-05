@@ -7,6 +7,7 @@ import imutils
 import time
 import cv2
 import os
+import json
 
 class VideoCreator:
     def __init__(self, input_video:str, output_video:str, homogrph:Homography) -> None:
@@ -17,6 +18,9 @@ class VideoCreator:
 
         self.sort_tracker = Sort(max_age=3, min_hits=1, iou_threshold=0.15)
         self.homogrph = homogrph
+
+        self.players_data_dict = {}
+        self.players_data_arr = []
 
     def __setup_args(self, input_video:str, output_video:str) -> dict:
         ap = argparse.ArgumentParser()
@@ -34,7 +38,15 @@ class VideoCreator:
 
         return args
 
+    def __create_dataset(self):
+        self.players_data_dict[self.args["output"]] = self.players_data_arr
+        json_title = self.args["output"].split('/')[-1].replace(".avi", "")
+        with open(f"/Eagle-Eye/result/datas/{json_title}.json", "w") as json_file:
+            json.dump(self.players_data_dict, json_file)
+
     def create_video(self):
+        frame_count = 0
+
         np.random.seed(42)
 
         print("[INFO] loading YOLO from disk...")
@@ -106,10 +118,13 @@ class VideoCreator:
             objects = self.sort_tracker.update(rects)
             object_dict = self.homogrph.get_bird_view_position(objects)
 
+            player_datas = []
+
             for position, object in zip(object_dict, objects):
-                text = str(object[-1])
-                cv2.putText(img, text, (position[0]+10, position[1]-10), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 0), 1)
+                object_id = str(object[-1])
+                cv2.putText(img, object_id, (position[0]+10, position[1]-10), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 0), 1)
                 cv2.circle(img, (position[0], position[1]), 3, (0, 255, 0), -1)
+                player_datas.append({object_id : (position[0], position[1])})
 
             if cv2.waitKey(10) & 0xFF == 27:
                 break
@@ -124,8 +139,11 @@ class VideoCreator:
                     print("[INFO] single frame took {:.4f} seconds".format(elap))
                     print("[INFO] estimated total time to finish: {:.4f}".format(
                         elap * total))
-
             writer.write(img)
 
+            self.players_data_arr.append({f"frame{frame_count}" : player_datas})
+            frame_count += 1
+
+        self.__create_dataset()
         cv2.waitKey(0)
         vs.release()
