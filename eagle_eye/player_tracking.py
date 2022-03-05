@@ -10,7 +10,7 @@ import os
 
 class VideoCreator:
     def __init__(self, input_video:str, output_video:str, homogrph:Homography) -> None:
-        self.args = self.setup_args(input_video, output_video)
+        self.args = self.__setup_args(input_video, output_video)
 
         self.weightsPath = os.path.sep.join([self.args["yolo"], "yolov3.weights"])
         self.configPath = os.path.sep.join([self.args["yolo"], "yolov3.cfg"])
@@ -18,7 +18,7 @@ class VideoCreator:
         self.sort_tracker = Sort(max_age=3, min_hits=1, iou_threshold=0.15)
         self.homogrph = homogrph
 
-    def setup_args(self, input_video:str, output_video:str) -> dict:
+    def __setup_args(self, input_video:str, output_video:str) -> dict:
         ap = argparse.ArgumentParser()
         ap.add_argument("-i", "--input", help="path to input video", default="")
         ap.add_argument("-o", "--output", help="path to output video", default="")
@@ -30,7 +30,7 @@ class VideoCreator:
         args = vars(ap.parse_args())
 
         args["input"] = input_video
-        args["output"] = f"/Eagle-Eye/result/{output_video}"
+        args["output"] = f"/Eagle-Eye/result/videos/{output_video}"
 
         return args
 
