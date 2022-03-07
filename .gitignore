@@ -1,2 +1,3 @@
 /eagle_eye/yolo-coco
 /eagle_eye/__pycache__
+/eagle_eye/*/__pycache__

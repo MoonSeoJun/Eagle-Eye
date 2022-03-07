@@ -1,6 +1,6 @@
-from player_tracking import VideoCreator
-from find_point import PointFinder
-from homography import Homography
+from eagle_eye.video_creator.birdview_video import BirdViewVideoCreator
+from eagle_eye.computer_vision.find_point import PointFinder
+from eagle_eye.computer_vision.homography import Homography
 
 
 if __name__ == "__main__":
@@ -17,6 +17,6 @@ if __name__ == "__main__":
 
     homography_class = Homography(input_point, pitch_point)
 
-    video_creator = VideoCreator(video_path, output_video, homography_class)
+    video_creator = BirdViewVideoCreator(video_path, output_video, homography_class)
 
     video_creator.create_video()

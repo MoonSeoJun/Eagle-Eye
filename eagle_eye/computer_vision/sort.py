@@ -17,11 +17,17 @@
 """
 from __future__ import print_function
 
+import os
 import numpy as np
 import matplotlib
 matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 from skimage import io
 
+import glob
+import time
+import argparse
 from filterpy.kalman import KalmanFilter
 
 np.random.seed(0)
@@ -72,6 +78,19 @@ def convert_bbox_to_z(bbox):
   return np.array([x, y, s, r]).reshape((4, 1))
 
 
+def convert_x_to_bbox(x,score=None):
+  """
+  Takes a bounding box in the centre form [x,y,s,r] and returns it in the form
+    [x1,y1,x2,y2] where x1,y1 is the top left and x2,y2 is the bottom right
+  """
+  w = np.sqrt(x[2] * x[3])
+  h = x[2] / w
+  if(score==None):
+    return np.array([x[0]-w/2.,x[1]-h/2.,x[0]+w/2.,x[1]+h/2.]).reshape((1,4))
+  else:
+    return np.array([x[0]-w/2.,x[1]-h/2.,x[0]+w/2.,x[1]+h/2.,score]).reshape((1,5))
+
+
 class KalmanBoxTracker(object):
   """
   This class represents the internal state of individual tracked objects observed as bbox.
@@ -110,6 +129,26 @@ class KalmanBoxTracker(object):
     self.hits += 1
     self.hit_streak += 1
     self.kf.update(convert_bbox_to_z(bbox))
+
+  def predict(self):
+    """
+    Advances the state vector and returns the predicted bounding box estimate.
+    """
+    if((self.kf.x[6]+self.kf.x[2])<=0):
+      self.kf.x[6] *= 0.0
+    self.kf.predict()
+    self.age += 1
+    if(self.time_since_update>0):
+      self.hit_streak = 0
+    self.time_since_update += 1
+    self.history.append(convert_x_to_bbox(self.kf.x))
+    return self.history[-1]
+
+  def get_state(self):
+    """
+    Returns the current bounding box estimate.
+    """
+    return convert_x_to_bbox(self.kf.x)
 
 
 def associate_detections_to_trackers(detections,trackers,iou_threshold = 0.3):
@@ -212,3 +251,19 @@ class Sort(object):
     if(len(ret)>0):
       return np.concatenate(ret)
     return np.empty((0,5))
+
+def parse_args():
+    """Parse input arguments."""
+    parser = argparse.ArgumentParser(description='SORT demo')
+    parser.add_argument('--display', dest='display', help='Display online tracker output (slow) [False]',action='store_true')
+    parser.add_argument("--seq_path", help="Path to detections.", type=str, default='data')
+    parser.add_argument("--phase", help="Subdirectory in seq_path.", type=str, default='train')
+    parser.add_argument("--max_age", 
+                        help="Maximum number of frames to keep alive a track without associated detections.", 
+                        type=int, default=1)
+    parser.add_argument("--min_hits", 
+                        help="Minimum number of associated detections before track is initialised.", 
+                        type=int, default=3)
+    parser.add_argument("--iou_threshold", help="Minimum IOU for match.", type=float, default=0.3)
+    args = parser.parse_args()
+    return args
