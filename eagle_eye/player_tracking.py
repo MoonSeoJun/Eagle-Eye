@@ -121,7 +121,7 @@ class VideoCreator:
             player_datas = []
 
             for position, object in zip(object_dict, objects):
-                object_id = str(object[-1])
+                object_id = str(int(object[-1]))
                 cv2.putText(img, object_id, (position[0]+10, position[1]-10), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 0), 1)
                 cv2.circle(img, (position[0], position[1]), 3, (0, 255, 0), -1)
                 player_datas.append({object_id : (position[0], position[1])})
