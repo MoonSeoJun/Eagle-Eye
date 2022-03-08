@@ -13,8 +13,9 @@ class PointFinder:
 
     def find_point(self, type):
         if type == "video":
-            img = cv2.VideoCapture(self.video_path)
-            (_, img) = img.read()
+            # img = cv2.VideoCapture(self.video_path)
+            # (_, img) = img.read()
+            img = cv2.imread(self.video_path, cv2.IMREAD_ANYCOLOR)
         elif type == "image":
             img = cv2.imread(self.pitch_img, cv2.IMREAD_ANYCOLOR)
         draw = img.copy()
